@@ -48,15 +48,18 @@ using namespace v8;
 @interface BTData : NSObject {
 	NSData *data;
 	NSString *address;
+    unsigned short *bytesWriten;
 }
 @property (nonatomic, assign) NSData *data;
 @property (nonatomic, assign) NSString *address;
+@property (nonatomic, assign) unsigned short *bytesWriten;
 @end
 
 /** Implementation of bt data class */
 @implementation BTData
 @synthesize data;
 @synthesize address;
+@synthesize bytesWriten;
 @end
 
 static NSMutableDictionary *instanceWorkers = nil;
@@ -209,13 +212,15 @@ static NSLock *globalConnectLock = nil;
 }
 
 /** Write synchronized to a connected Bluetooth device */
-- (IOReturn)writeAsync:(void *)data length:(UInt16)length toDevice: (NSString *)address
+- (IOReturn)writeAsync:(void *)data length:(UInt16)length toDevice: (NSString *)address bytesWriten:(UInt16 *)bytesWriten
 {
 	[writeLock lock];
 
 	BTData *writeData = [[BTData alloc] init];
 	writeData.data = [NSData dataWithBytes: data length: length];
 	writeData.address = address;
+    writeData.bytesWriten = bytesWriten;
+    *(writeData.bytesWriten) = 0;
 
 	// wait for the write to be performed on the worker thread
 	[self performSelector:@selector(writeAsyncTask:) onThread:worker withObject:writeData waitUntilDone:true];
@@ -252,6 +257,7 @@ static NSLock *globalConnectLock = nil;
 			// Updates the position in the buffer:
 			numBytesRemaining -= numBytesToWrite;
 			idx += numBytesToWrite;
+            *(writeData.bytesWriten) += numBytesToWrite;
 		}
 	}
 

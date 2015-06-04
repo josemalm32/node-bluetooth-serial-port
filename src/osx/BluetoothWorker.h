@@ -44,7 +44,7 @@ BluetoothDeviceResources *res;
 + (id)getInstance: (NSString *) address;
 - (void)disconnectFromDevice: (NSString *) address;
 - (IOReturn)connectDevice: (NSString *) address onChannel: (int) channel withPipe: (pipe_t *)pipe;
-- (IOReturn)writeAsync:(void *)data length:(UInt16)length toDevice: (NSString *)address;
+- (IOReturn)writeAsync:(void *)data length:(UInt16)length toDevice: (NSString *)address bytesWriten: (unsigned short *)bytesWriten;
 - (void)inquireWithPipe: (pipe_t *)pipe;
 - (int)getRFCOMMChannelID: (NSString *) address;
 
