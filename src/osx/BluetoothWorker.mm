@@ -257,7 +257,10 @@ static NSLock *globalConnectLock = nil;
 			// Updates the position in the buffer:
 			numBytesRemaining -= numBytesToWrite;
 			idx += numBytesToWrite;
-            *(writeData.bytesWriten) += numBytesToWrite;
+
+            if (writeResult == kIOReturnSuccess) {
+                *(writeData.bytesWriten) += numBytesToWrite;
+            }
 		}
 	}
 
